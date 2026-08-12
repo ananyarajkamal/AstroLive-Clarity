@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getMatches } from "@/lib/api";
-import { Sparkles, Calendar, Clock, MapPin, HelpCircle, Compass, RefreshCw, Command } from "lucide-react";
+import { Star, User, Calendar, Clock, MapPin, Search, RefreshCw, Sparkles } from "lucide-react";
 
 const CITIES = [
   "Delhi", "Mumbai", "Bangalore", "Chennai", "Kolkata",
@@ -12,9 +12,9 @@ const CITIES = [
 
 const QUESTION_TYPES = [
   { id: "marriage", label: "Marriage & Relationship" },
-  { id: "career", label: "Career & Job" },
-  { id: "health", label: "Health & Well-being" },
-  { id: "property", label: "Property & Wealth" }
+  { id: "career", label: "Career & Growth" },
+  { id: "health", label: "Health & Vitality" },
+  { id: "property", label: "Property & Investments" }
 ];
 
 const DEFAULT_PRIYA_DATA = {
@@ -30,7 +30,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState(DEFAULT_PRIYA_DATA);
 
-  // Shortcut Listener for Shift + D
+  // Keyboard shortcut listener for Shift + D
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.shiftKey && (e.key === "D" || e.key === "d")) {
@@ -44,7 +44,6 @@ export default function Home() {
   const handleReset = () => {
     sessionStorage.clear();
     setFormData(DEFAULT_PRIYA_DATA);
-    window.location.reload();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -61,90 +60,84 @@ export default function Home() {
   };
 
   return (
-    <div className="flex-1 flex flex-col justify-between p-6 z-10 animate-fade-in">
-      {/* Header */}
-      <div className="text-center mt-4">
-        <div className="inline-flex items-center justify-center p-3 bg-gradient-to-tr from-amber-500/20 to-orange-500/20 rounded-full border border-amber-500/30 mb-2">
-          <Compass className="w-8 h-8 text-amber-400 animate-pulse" />
+    <div className="max-w-2xl mx-auto py-4">
+      {/* Page Header */}
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-semibold mb-3">
+          <Sparkles className="w-3.5 h-3.5" /> LightGBM Match Engine & Vedic Chart
         </div>
-        <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-amber-200 via-orange-300 to-amber-400 bg-clip-text text-transparent">
-          AstroLive Clarity
+        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight sm:text-4xl">
+          Find Your Matched Astrologer
         </h1>
-        <p className="text-xs text-amber-200/70 mt-1 uppercase tracking-widest font-semibold">
-          Vedic Astrology • Smart ML Match
+        <p className="mt-2 text-sm text-slate-600 max-w-lg mx-auto">
+          Enter your birth details to calculate planetary positions and connect with astrologers ranked for your chart.
         </p>
       </div>
 
       {/* Main Form Card */}
-      <div className="my-auto bg-slate-800/80 backdrop-blur-xl border border-slate-700/60 rounded-3xl p-6 shadow-xl relative overflow-hidden transition-all duration-300">
-        <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-amber-500/10 to-transparent rounded-bl-full pointer-events-none" />
-        
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-amber-400" /> Enter Birth Details
-            </h2>
-            <p className="text-xs text-slate-400">
-              Calculates Lagna, Nakshatra & Dasha to rank astrologers using LightGBM.
-            </p>
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-xl p-6 sm:p-8">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+          <div className="flex items-center gap-2">
+            <Star className="w-5 h-5 text-indigo-600 fill-indigo-600" />
+            <h2 className="text-lg font-bold text-slate-900">Birth Chart Parameters</h2>
           </div>
-          <span className="text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30 font-mono hidden sm:inline-block">
-            Shift + D
+          <span className="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded font-mono font-medium hidden sm:inline-block">
+            Shortcut: Shift + D
           </span>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {/* Name */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
-              Your Name
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <User className="w-3.5 h-3.5 text-indigo-600" /> Full Name
             </label>
             <input
               type="text"
               placeholder="e.g. Priya"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500 transition"
+              className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white transition"
             />
           </div>
 
-          {/* Date & Time Row */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* Date & Time Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1 flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5 text-amber-400" /> Date
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-indigo-600" /> Birth Date
               </label>
               <input
                 type="date"
                 required
                 value={formData.birth_date}
                 onChange={(e) => setFormData({ ...formData, birth_date: e.target.value })}
-                className="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500 transition"
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white transition"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1 flex items-center gap-1">
-                <Clock className="w-3.5 h-3.5 text-amber-400" /> Time
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-indigo-600" /> Birth Time
               </label>
               <input
                 type="time"
                 required
                 value={formData.birth_time}
                 onChange={(e) => setFormData({ ...formData, birth_time: e.target.value })}
-                className="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500 transition"
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white transition"
               />
             </div>
           </div>
 
-          {/* City */}
+          {/* Birth City */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1 flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5 text-amber-400" /> Birth City
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-indigo-600" /> Birth City
             </label>
             <select
               value={formData.birth_city}
               onChange={(e) => setFormData({ ...formData, birth_city: e.target.value })}
-              className="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500 transition"
+              className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white transition"
             >
               {CITIES.map((c) => (
                 <option key={c} value={c}>{c}</option>
@@ -154,13 +147,13 @@ export default function Home() {
 
           {/* Question Type */}
           <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1 flex items-center gap-1">
-              <HelpCircle className="w-3.5 h-3.5 text-amber-400" /> Primary Query
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <Search className="w-3.5 h-3.5 text-indigo-600" /> Primary Consultation Area
             </label>
             <select
               value={formData.question_type}
               onChange={(e) => setFormData({ ...formData, question_type: e.target.value })}
-              className="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500 transition"
+              className="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white transition"
             >
               {QUESTION_TYPES.map((q) => (
                 <option key={q.id} value={q.id}>{q.label}</option>
@@ -168,15 +161,15 @@ export default function Home() {
             </select>
           </div>
 
-          {/* Submit Button */}
+          {/* Action Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-4 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-bold py-3.5 rounded-xl shadow-lg shadow-amber-500/20 active:scale-[0.98] transition flex items-center justify-center gap-2"
+            className="w-full mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-600/20 active:scale-[0.99] transition flex items-center justify-center gap-2"
           >
             {loading ? (
               <span className="inline-flex items-center gap-2">
-                <svg className="animate-spin h-5 w-5 text-slate-950" viewBox="0 0 24 24" fill="none">
+                <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24" fill="none">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
                 </svg>
@@ -184,22 +177,22 @@ export default function Home() {
               </span>
             ) : (
               <>
-                <Sparkles className="w-5 h-5" /> Find My Astrologer
+                <Search className="w-4 h-4" /> Find My Astrologer
               </>
             )}
           </button>
         </form>
-      </div>
 
-      {/* Footer Helper Actions */}
-      <div className="flex items-center justify-between text-[11px] text-slate-500 pt-2 border-t border-slate-800/60">
-        <button
-          onClick={handleReset}
-          className="flex items-center gap-1 hover:text-amber-400 transition"
-        >
-          <RefreshCw className="w-3 h-3" /> Reset Demo
-        </button>
-        <span className="text-[10px]">Priya Demo Profile Loaded</span>
+        {/* Footer Reset Helper */}
+        <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+          <button
+            onClick={handleReset}
+            className="inline-flex items-center gap-1 text-slate-600 hover:text-indigo-600 font-medium transition"
+          >
+            <RefreshCw className="w-3.5 h-3.5" /> Reset Form
+          </button>
+          <span>Pre-loaded Demo Profile: Priya</span>
+        </div>
       </div>
     </div>
   );

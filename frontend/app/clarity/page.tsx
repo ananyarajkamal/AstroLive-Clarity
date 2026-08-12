@@ -3,7 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { ClarityCheckResponse, getClarityCheck } from "@/lib/api";
-import { Sparkles, ShieldCheck, CheckCircle2, Zap, ArrowRight } from "lucide-react";
+import { Zap, ShieldCheck, CheckCircle, ArrowRight, AlertTriangle } from "lucide-react";
 
 function ClarityContent() {
   const searchParams = useSearchParams();
@@ -30,16 +30,16 @@ function ClarityContent() {
   }, [consultationId, ratingParam]);
 
   const handleBooking = (astrologerName: string) => {
-    setToastMessage(`Booking confirmed with ${astrologerName}! (0 cost for Clarity Guarantee)`);
-    setTimeout(() => setToastMessage(null), 3000);
+    setToastMessage(`Booking confirmed with ${astrologerName}! (Covered under Clarity Guarantee)`);
+    setTimeout(() => setToastMessage(null), 3500);
   };
 
   if (loading) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-        <div className="w-16 h-16 border-4 border-amber-500/20 border-t-amber-500 rounded-full animate-spin mb-4" />
-        <h3 className="text-lg font-bold text-amber-200">Evaluating Consultation Quality...</h3>
-        <p className="text-xs text-slate-400 mt-1 max-w-xs">
+      <div className="py-16 text-center max-w-md mx-auto">
+        <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4" />
+        <h3 className="text-lg font-bold text-slate-900">Evaluating Consultation Transcript...</h3>
+        <p className="text-xs text-slate-500 mt-1">
           Checking rating, anxiety indicators & high-upsell patterns
         </p>
       </div>
@@ -49,60 +49,57 @@ function ClarityContent() {
   const matches = clarityData?.matches || [];
 
   return (
-    <div className="flex-1 flex flex-col p-4 pb-6 overflow-y-auto space-y-4 relative">
+    <div className="max-w-4xl mx-auto space-y-6">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="absolute top-4 left-4 right-4 z-50 bg-emerald-500 text-slate-950 px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 font-bold animate-fade-in">
-          <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+        <div className="fixed top-20 right-8 z-50 bg-emerald-600 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3 font-bold animate-bounce">
+          <CheckCircle className="w-5 h-5 flex-shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}
 
       {/* Hero Header */}
-      <div className="bg-gradient-to-br from-amber-500/20 via-orange-500/10 to-slate-900 border border-amber-500/30 rounded-3xl p-5 shadow-xl text-center relative overflow-hidden">
-        <div className="inline-flex items-center gap-1.5 bg-amber-500/20 text-amber-300 text-xs px-3 py-1 rounded-full border border-amber-500/30 font-semibold mb-2">
-          <Zap className="w-3.5 h-3.5" /> Clarity Guarantee Triggered
+      <div className="bg-white border border-indigo-100 rounded-2xl p-8 shadow-sm text-center relative overflow-hidden">
+        <div className="inline-flex items-center gap-1.5 bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs px-3.5 py-1.5 rounded-full font-bold mb-3">
+          <Zap className="w-4 h-4 text-indigo-600" /> Clarity Check Triggered
         </div>
 
-        <h1 className="text-2xl font-black text-slate-100 tracking-tight mb-2">
+        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight sm:text-4xl mb-3">
           Not sure about what you heard?
         </h1>
 
-        <p className="text-xs text-slate-300 max-w-xs mx-auto leading-relaxed">
-          {clarityData?.reason || "We noticed your consultation left you confused or pushed expensive remedies."}
+        <p className="text-sm text-slate-600 max-w-xl mx-auto leading-relaxed mb-4">
+          AstroLive matched 3 top-rated astrologers who specialize in your specific chart and question, excluding pushy up-sellers.
         </p>
+
+        {clarityData?.reason && (
+          <div className="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 text-xs px-4 py-2 rounded-xl font-medium">
+            <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+            <span>Trigger reason: {clarityData.reason}</span>
+          </div>
+        )}
       </div>
 
-      {/* Subhead Context */}
-      <div className="px-1">
-        <h2 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">
-          Recommended Alternative Matches
-        </h2>
-        <p className="text-xs text-slate-300 font-medium">
-          AstroLive matched 3 top-rated astrologers who specialize in Marriage for your birth chart, excluding pushy up-sellers.
-        </p>
-      </div>
-
-      {/* Astrologer Cards List */}
-      <div className="space-y-3.5">
+      {/* 3 Astrologers Responsive Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {matches.map((ast, idx) => {
           const matchPercent = Math.round(ast.match_score * 100);
           const avatarGradients = [
             "from-emerald-500 to-teal-600",
-            "from-purple-500 to-indigo-600",
+            "from-indigo-500 to-purple-600",
             "from-amber-500 to-orange-600",
           ];
 
           return (
             <div
               key={ast.astrologer_id}
-              className="bg-slate-800/90 border border-slate-700/80 rounded-2xl p-4 shadow-xl flex flex-col justify-between"
+              className="bg-white border border-slate-200 rounded-xl p-6 shadow-md hover:-translate-y-1 hover:shadow-xl transition-all duration-200 flex flex-col justify-between"
             >
-              {/* Card Header */}
-              <div className="flex items-start justify-between gap-3 mb-2.5">
-                <div className="flex items-center gap-3">
+              <div>
+                {/* Header */}
+                <div className="flex items-center gap-3 mb-3">
                   <div
-                    className={`w-11 h-11 rounded-full bg-gradient-to-br ${avatarGradients[idx % 3]} flex items-center justify-center text-slate-950 font-black text-sm shadow-md`}
+                    className={`w-11 h-11 rounded-full bg-gradient-to-br ${avatarGradients[idx % 3]} text-white font-bold text-sm flex items-center justify-center shadow-sm flex-shrink-0`}
                   >
                     {ast.name
                       .split(" ")
@@ -111,50 +108,51 @@ function ClarityContent() {
                       .join("")}
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-slate-100">{ast.name}</h3>
-                    <div className="text-[11px] text-slate-400 flex items-center gap-2">
-                      <span className="flex items-center gap-1 text-emerald-400 font-semibold">
-                        <ShieldCheck className="w-3.5 h-3.5" /> TrustScore {ast.trustscore}
-                      </span>
-                    </div>
+                    <h3 className="text-sm font-bold text-slate-900">{ast.name}</h3>
+                    <p className="text-xs text-emerald-700 font-semibold flex items-center gap-1">
+                      <ShieldCheck className="w-3.5 h-3.5" /> TrustScore {ast.trustscore}
+                    </p>
                   </div>
                 </div>
 
-                <span className="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs px-2.5 py-1 rounded-xl font-bold">
+                {/* Specialties */}
+                <div className="flex flex-wrap gap-1 mb-3">
+                  {ast.specialty.map((s) => (
+                    <span
+                      key={s}
+                      className="bg-slate-100 text-slate-700 text-[11px] px-2 py-0.5 rounded font-medium capitalize"
+                    >
+                      {s}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Match percentage */}
+                <div className="text-lg font-black text-indigo-600 mb-1">
                   {matchPercent}% Match
-                </span>
+                </div>
+
+                <p className="text-xs text-slate-500 italic leading-relaxed mb-4">
+                  "{ast.reason}"
+                </p>
               </div>
 
-              {/* Specialties & Reason */}
-              <div className="flex flex-wrap gap-1 mb-2">
-                {ast.specialty.map((s) => (
-                  <span
-                    key={s}
-                    className="bg-slate-700/50 text-slate-300 text-[10px] px-2 py-0.5 rounded capitalize"
-                  >
-                    {s}
-                  </span>
-                ))}
-              </div>
-
-              <p className="text-[11px] text-slate-400 italic mb-3">"{ast.reason}"</p>
-
-              {/* Action */}
+              {/* Action Button */}
               <button
                 onClick={() => handleBooking(ast.name)}
-                className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-bold py-2 rounded-xl shadow-md transition text-xs flex items-center justify-center gap-1.5"
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-lg shadow-sm transition text-xs flex items-center justify-center gap-1.5"
               >
-                Get Clarity Consultation <ArrowRight className="w-3.5 h-3.5" />
+                Book Consultation <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
           );
         })}
       </div>
 
-      {/* Footer Badge */}
-      <div className="pt-2 text-center">
-        <span className="inline-flex items-center gap-1.5 bg-slate-800/80 text-amber-400 text-[11px] px-3.5 py-1.5 rounded-full border border-slate-700 font-semibold shadow-inner">
-          <Zap className="w-3.5 h-3.5 text-amber-400" /> Matched by Smart Match Engine
+      {/* Bottom Smart Match Badge */}
+      <div className="text-center pt-4">
+        <span className="inline-flex items-center gap-2 bg-white border border-slate-200 text-slate-700 text-xs px-4 py-2 rounded-full font-bold shadow-sm">
+          <Zap className="w-4 h-4 text-indigo-600" /> Matched by Smart Match Engine
         </span>
       </div>
     </div>
@@ -164,9 +162,9 @@ function ClarityContent() {
 export default function ClarityPage() {
   return (
     <Suspense fallback={
-      <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-        <div className="w-16 h-16 border-4 border-amber-500/20 border-t-amber-500 rounded-full animate-spin mb-4" />
-        <h3 className="text-lg font-bold text-amber-200">Loading Clarity Options...</h3>
+      <div className="py-16 text-center">
+        <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin mx-auto mb-4" />
+        <h3 className="text-lg font-bold text-slate-900">Loading Clarity Options...</h3>
       </div>
     }>
       <ClarityContent />

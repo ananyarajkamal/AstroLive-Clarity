@@ -29,6 +29,7 @@ export interface AstrologerMatch {
   price_per_min: number;
   reason: string;
   years_exp?: number;
+  upsell_flags?: number;
   profile_image_url?: string;
 }
 
@@ -72,7 +73,7 @@ export interface TrustScoreResponse {
   upsell_flags: number;
 }
 
-// Fallback Mock Data for Graceful Demo Resilience
+// Fallback Mock Data for Demo Resilience
 export const FALLBACK_MATCH_RESPONSE: MatchResponse = {
   query_id: "demo_priya_query",
   chart_features: {
@@ -80,7 +81,7 @@ export const FALLBACK_MATCH_RESPONSE: MatchResponse = {
     moon_sign: "Pisces",
     nakshatra: "Revati",
     dasha_lord: "Mercury",
-    mars_afflicted: false,
+    mars_afflicted: true,
     saturn_return: false,
     rahu_ketu_axis: "Libra-Aries",
     jupiter_aspect: true
@@ -96,6 +97,7 @@ export const FALLBACK_MATCH_RESPONSE: MatchResponse = {
       price_per_min: 60.0,
       reason: "Specialist in marriage • Top match for Manglik / Mars-afflicted birth charts",
       years_exp: 22,
+      upsell_flags: 2,
       profile_image_url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80"
     },
     {
@@ -108,6 +110,7 @@ export const FALLBACK_MATCH_RESPONSE: MatchResponse = {
       price_per_min: 35.0,
       reason: "Specialist in marriage • High credibility TrustScore (95.0)",
       years_exp: 12,
+      upsell_flags: 0,
       profile_image_url: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80"
     },
     {
@@ -120,6 +123,7 @@ export const FALLBACK_MATCH_RESPONSE: MatchResponse = {
       price_per_min: 45.0,
       reason: "Specialist in marriage • High credibility TrustScore (92.5)",
       years_exp: 18,
+      upsell_flags: 1,
       profile_image_url: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80"
     }
   ]
@@ -140,7 +144,7 @@ export const FALLBACK_CLARITY_RESPONSE: ClarityCheckResponse = {
       price_per_min: 35.0,
       reason: "Specialist in marriage • High credibility TrustScore (95.0)",
       years_exp: 12,
-      profile_image_url: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80"
+      upsell_flags: 0
     },
     {
       rank: 2,
@@ -152,7 +156,7 @@ export const FALLBACK_CLARITY_RESPONSE: ClarityCheckResponse = {
       price_per_min: 60.0,
       reason: "Specialist in marriage",
       years_exp: 22,
-      profile_image_url: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80"
+      upsell_flags: 2
     },
     {
       rank: 3,
@@ -164,7 +168,7 @@ export const FALLBACK_CLARITY_RESPONSE: ClarityCheckResponse = {
       price_per_min: 55.0,
       reason: "16 years experience with high rating",
       years_exp: 16,
-      profile_image_url: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&auto=format&fit=crop&q=80"
+      upsell_flags: 0
     }
   ]
 };
@@ -174,7 +178,7 @@ export const getMatches = async (data: MatchRequest): Promise<MatchResponse> => 
     const res = await api.post("/api/v1/match", data);
     return res.data;
   } catch (err) {
-    console.warn("Backend API unreachable, returning fallback mock data for demo resilience.");
+    console.warn("Backend API unreachable, returning fallback mock data.");
     return FALLBACK_MATCH_RESPONSE;
   }
 };
@@ -184,7 +188,7 @@ export const getClarityCheck = async (data: ClarityCheckRequest): Promise<Clarit
     const res = await api.post("/api/v1/clarity-check", data);
     return res.data;
   } catch (err) {
-    console.warn("Backend API unreachable, returning fallback clarity response for demo resilience.");
+    console.warn("Backend API unreachable, returning fallback clarity response.");
     return FALLBACK_CLARITY_RESPONSE;
   }
 };

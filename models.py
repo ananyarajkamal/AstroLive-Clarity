@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, JSON
+from sqlalchemy import Column, Integer, String, Float, Boolean, ForeignKey, JSON, DateTime
 from sqlalchemy.orm import relationship
+from datetime import datetime
 from database import Base
 
 class User(Base):
@@ -65,3 +66,13 @@ class UserChartFeatures(Base):
     jupiter_aspect = Column(Boolean, default=False)
 
     user = relationship("User", back_populates="chart_features")
+
+class MatchResult(Base):
+    __tablename__ = "match_results"
+
+    id = Column(Integer, primary_key=True, index=True)
+    query_id = Column(String, unique=True, index=True, nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    question_type = Column(String, nullable=False)
+    results = Column(JSON, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)

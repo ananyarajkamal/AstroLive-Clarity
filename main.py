@@ -1,7 +1,7 @@
 import json
 import os
 from contextlib import asynccontextmanager
-from typing import List, Optional
+from typing import Optional
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -12,6 +12,7 @@ import models
 import astrology_engine
 import match_engine
 import ml_models
+from seed_demo import seed_demo_data
 
 def seed_database():
     Base.metadata.create_all(bind=engine)
@@ -27,6 +28,9 @@ def seed_database():
                         db.add(astrologer)
                 db.commit()
                 print("Seeded database with initial astrologers data.")
+        
+        # Always seed demo data on startup
+        seed_demo_data(db)
     finally:
         db.close()
 
@@ -38,7 +42,6 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="AstroLive Clarity API", lifespan=lifespan)
 
-# Add CORS Middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -51,7 +54,6 @@ app.add_middleware(
 def health_check():
     return {"status": "ok"}
 
-# Pydantic Schemas
 class MatchRequest(BaseModel):
     user_id: Optional[int] = None
     birth_date: str
@@ -68,7 +70,6 @@ def match_astrologers(req: MatchRequest, db: Session = Depends(get_db)):
     lat, lon = astrology_engine.get_city_lat_lon(req.birth_city)
     chart_features = astrology_engine.compute_chart_features(req.birth_date, req.birth_time, lat, lon)
 
-    # Save user & chart features to DB if user_id not provided or new
     user = None
     if req.user_id:
         user = db.query(models.User).filter(models.User.id == req.user_id).first()
@@ -110,11 +111,10 @@ def match_astrologers(req: MatchRequest, db: Session = Depends(get_db)):
 def clarity_check(req: ClarityCheckRequest, db: Session = Depends(get_db)):
     consultation = db.query(models.Consultation).filter(models.Consultation.id == req.consultation_id).first()
     if not consultation:
-        # Fallback dummy consultation if ID not found for demo
         consultation = models.Consultation(
             id=req.consultation_id,
             user_id=1,
-            astrologer_id=9,  # Low trustscore astrologer
+            astrologer_id=9,
             question_type="marriage",
             rating=req.rating or 2.0,
             chat_transcript="I am very worried and scared about my future. The astrologer told me to buy an expensive remedy puja for ₹5000 immediately.",
@@ -129,7 +129,6 @@ def clarity_check(req: ClarityCheckRequest, db: Session = Depends(get_db)):
     anxiety_keywords = ["worried", "scared", "not sure", "second opinion", "doubtful", "confused"]
     has_anxiety = any(kw in transcript.lower() for kw in anxiety_keywords)
     
-    # Check upsell model prediction on transcript
     _, upsell_model = ml_models.load_models()
     vectorizer = upsell_model["vectorizer"]
     classifier = upsell_model["classifier"]
@@ -153,7 +152,6 @@ def clarity_check(req: ClarityCheckRequest, db: Session = Depends(get_db)):
 
     matches = []
     if trigger:
-        # Fetch user's chart features or compute default
         user_chart_obj = db.query(models.UserChartFeatures).filter(models.UserChartFeatures.user_id == consultation.user_id).first()
         if user_chart_obj:
             chart_features = {
@@ -168,7 +166,7 @@ def clarity_check(req: ClarityCheckRequest, db: Session = Depends(get_db)):
             }
         else:
             lat, lon = astrology_engine.get_city_lat_lon("Delhi")
-            chart_features = astrology_engine.compute_chart_features("1995-05-15", "14:30", lat, lon)
+            chart_features = astrology_engine.compute_chart_features("1998-03-15", "14:30", lat, lon)
 
         matches, _ = match_engine.get_matches(
             user_id=consultation.user_id,
@@ -191,7 +189,6 @@ def get_astrologer_trustscore(astrologer_id: int, db: Session = Depends(get_db))
     if not astrologer:
         raise HTTPException(status_code=404, detail="Astrologer not found")
 
-    # Dimensions
     volume_score = min(100.0, (astrologer.consultation_count / 2000.0) * 100.0)
     specialty_depth_score = min(100.0, astrologer.years_exp * 4.5)
 
@@ -210,4 +207,4 @@ def get_astrologer_trustscore(astrologer_id: int, db: Session = Depends(get_db))
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

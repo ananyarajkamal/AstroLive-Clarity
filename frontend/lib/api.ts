@@ -14,7 +14,7 @@ export interface MatchRequest {
   name?: string;
   birth_date: string;
   birth_time: string;
-  birth_city: str;
+  birth_city: string;
   question_type: string;
 }
 
@@ -27,6 +27,7 @@ export interface AstrologerMatch {
   trustscore: number;
   price_per_min: number;
   reason: string;
+  years_exp?: number;
   profile_image_url?: string;
 }
 
